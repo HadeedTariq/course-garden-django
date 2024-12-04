@@ -78,9 +78,7 @@ class CouponCode(models.Model):
     quantity = models.IntegerField(default=0)
     course = models.ForeignKey(
         Course,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
+        on_delete=models.CASCADE,
         related_name="coupons",
     )
     coupon_users = models.ManyToManyField(User, related_name="used_coupons", blank=True)

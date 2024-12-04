@@ -124,7 +124,11 @@ def loginUser(request):
             errormessage += "User doesn't exist"
 
     form = LoginForm()
-    print(User.objects.all().values())
+    # print(User.objects.update(id=6, role="teacher"))
+    # user = User.objects.get(id=6)
+    # user.role = "teacher"
+    # user.save()
+
     # print(Otp.objects.all().delete())
     return render(
         request,

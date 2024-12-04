@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 from django import forms
-from .models import Course, Chapter
+from .models import Course, Chapter, CouponCode
 
 
 class CourseForm(ModelForm):
@@ -19,4 +19,22 @@ class CourseForm(ModelForm):
 class ChapterForm(ModelForm):
     class Meta:
         model = Chapter
-        fields = ["title", "description", "thumbnail", "chapter_number", "video"]
+        fields = "__all__"
+        widgets = {
+            "thumbnail": forms.FileInput(attrs={"placeholder": "Upload thumbnail"}),
+            "video": forms.FileInput(attrs={"placeholder": "Upload thumbnail"}),
+        }
+        exclude = [
+            "course",
+        ]
+
+
+class CouponForm(ModelForm):
+    class Meta:
+        model = CouponCode
+        fields = "__all__"
+
+        exclude = [
+            "course",
+            "coupon_users",
+        ]

@@ -21,7 +21,12 @@ class TeacherMiddleware:
                         username=user["username"],
                         role="teacher",
                     )
-                    print(is_teacher)
+
+                    request.user_data = is_teacher
+                    response = self.get_response(request)
+
+                    # Code executed for each request after the view is called.
+                    return response
                 except User.DoesNotExist:
                     return http.HttpResponse("Unauthorized")
 
