@@ -3,6 +3,7 @@ from django.shortcuts import render, get_object_or_404
 from .forms import CouponForm, CourseForm, ChapterForm
 import cloudinary
 from .models import Chapter, Course
+from djmoney.money import Money  # This is the proper Money class to use
 
 
 # Create your views here.
@@ -10,14 +11,16 @@ def create_course(request):
     successmessage = ""
     errormessage = ""
     creator = getattr(request, "user_data", None)
-    print(creator)
+
     if request.method == "POST":
         form = CourseForm(request.POST, request.FILES)
         if form.is_valid():
-            price = request.POST.get("price")
+            price = request.POST.get("price_0")
+            currency = request.POST.get("price_1")
+            actual_price = Money(price, currency)
             status = request.POST.get("status")
 
-            is_valid_course = Course.price_validation(price, status)
+            is_valid_course = Course.price_validation(actual_price, status)
 
             if is_valid_course["error"] != None:
                 errormessage += "Course price is required"
@@ -34,7 +37,7 @@ def create_course(request):
                 course = Course.objects.create(
                     title=title,
                     description=description,
-                    price=price,
+                    price=actual_price,
                     totalChapters=totalChapters,
                     category=category,
                     status=status,
