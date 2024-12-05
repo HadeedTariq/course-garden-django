@@ -22,7 +22,9 @@ class ChapterForm(ModelForm):
         fields = "__all__"
         widgets = {
             "thumbnail": forms.FileInput(attrs={"placeholder": "Upload thumbnail"}),
-            "video": forms.FileInput(attrs={"placeholder": "Upload thumbnail"}),
+            "video": forms.FileInput(
+                attrs={"accept": "video/*", "placeholder": "Upload video"},
+            ),
         }
         exclude = [
             "course",

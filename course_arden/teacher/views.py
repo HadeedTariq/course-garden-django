@@ -88,38 +88,48 @@ def publish_course(request, id):
         elif form_type == "chapters":
             is_valid = True
             for i, form in enumerate(chapter_forms):
-                thumbnail_file = request.FILES[f"form_{i}-thumbnail"]
-                video_file = request.FILES[f"form_{i}-video"]
+                try:
+                    thumbnail_file = request.FILES[f"form_{i}-thumbnail"]
+                    video_file = request.FILES[f"form_{i}-video"]
 
-                # Upload the thumbnail image to Cloudinary
-                thumbnail_result = cloudinary.uploader.upload(
-                    thumbnail_file, upload_preset="ogypr3xk"
-                )
-                thumbnail_url = thumbnail_result["secure_url"]
+                    # Upload the thumbnail image to Cloudinary
+                    thumbnail_result = cloudinary.uploader.upload(
+                        thumbnail_file, upload_preset="ogypr3xk"
+                    )
+                    thumbnail_url = thumbnail_result["secure_url"]
 
-                # Upload the video to Cloudinary
-                video_result = cloudinary.uploader.upload(
-                    video_file,
-                    upload_preset="ogypr3xk",
-                    resource_type="video",
-                )
-                video_url = video_result["secure_url"]
+                    # Upload the video to Cloudinary
+                    video_result = cloudinary.uploader.upload(
+                        video_file,
+                        upload_preset="ogypr3xk",
+                        resource_type="video",
+                    )
+                    video_url = video_result["secure_url"]
 
-                title = request.POST.get(f"form_{i}-title")
-                description = request.POST.get(f"form_{i}-description")
-                chapter_number = request.POST.get(f"form_{i}-chapter_number")
+                    title = request.POST.get(f"form_{i}-title")
+                    description = request.POST.get(f"form_{i}-description")
+                    chapter_number = request.POST.get(f"form_{i}-chapter_number")
 
-                chapter = Chapter.objects.create(
-                    title=title,
-                    description=description,
-                    thumbnail=thumbnail_url,
-                    chapter_number=chapter_number,
-                    video=video_url,
-                    course=course,
-                )
-                chapter.save()
+                    chapter = Chapter.objects.create(
+                        title=title,
+                        description=description,
+                        thumbnail=thumbnail_url,
+                        chapter_number=chapter_number,
+                        video=video_url,
+                        course=course,
+                    )
+
+                    chapter.save()
+                except Exception as e:
+                    print(e)
+                    is_valid = False
+                    errormessage = "Error creating chapter"
             if is_valid:
-                successmessage = "Chapters successfully"
+                successmessage = "Chapters created successfully"
+        elif form_type == "publish":
+            course.is_publish = True
+            course.save()
+            successmessage = "Coupon published successfully"
 
     couponForm = CouponForm()
 
