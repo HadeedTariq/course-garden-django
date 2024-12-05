@@ -1,8 +1,8 @@
-from django.shortcuts import render, get_object_or_404, redirect
-
+from django.http import JsonResponse
+from django.shortcuts import render, get_object_or_404
 from .forms import CouponForm, CourseForm, ChapterForm
 import cloudinary
-from .models import Chapter, CouponCode, Course
+from .models import Chapter, Course
 
 
 # Create your views here.
@@ -14,27 +14,35 @@ def create_course(request):
     if request.method == "POST":
         form = CourseForm(request.POST, request.FILES)
         if form.is_valid():
-            file = request.FILES["thumbnail"]
-            result = cloudinary.uploader.upload(file, upload_preset="ogypr3xk")
-            thumbnail = result["secure_url"]
-            title = request.POST.get("title")
-            description = request.POST.get("description")
             price = request.POST.get("price")
-            totalChapters = request.POST.get("totalChapters")
-            category = request.POST.get("category")
             status = request.POST.get("status")
-            course = Course.objects.create(
-                title=title,
-                description=description,
-                price=price,
-                totalChapters=totalChapters,
-                category=category,
-                status=status,
-                thumbnail=thumbnail,
-                creator=creator,
-            )
-            course.save()
-            successmessage += "Course created successfully"
+
+            is_valid_course = Course.price_validation(price, status)
+
+            if is_valid_course["error"] != None:
+                errormessage += "Course price is required"
+
+            else:
+                file = request.FILES["thumbnail"]
+                result = cloudinary.uploader.upload(file, upload_preset="ogypr3xk")
+                thumbnail = result["secure_url"]
+                title = request.POST.get("title")
+                description = request.POST.get("description")
+                totalChapters = request.POST.get("totalChapters")
+                category = request.POST.get("category")
+
+                course = Course.objects.create(
+                    title=title,
+                    description=description,
+                    price=price,
+                    totalChapters=totalChapters,
+                    category=category,
+                    status=status,
+                    thumbnail=thumbnail,
+                    creator=creator,
+                )
+                course.save()
+                successmessage += "Course created successfully"
         else:
             errormessage += "Form is not valid"
     else:
@@ -46,19 +54,6 @@ def create_course(request):
         "teacher/create_course.html",
         {"form": form, "successmessage": successmessage, "errormessage": errormessage},
     )
-
-
-def create_coupon(request, course):
-    successmessage = ""
-    errormessage = ""
-    if request.method == "POST":
-        form = CouponForm(request.POST)
-        if form.is_valid():
-            coupon = form.save(commit=False)
-            coupon.course = course
-            coupon.save()
-        else:
-            errormessage += "Form is not valid"
 
 
 def publish_course(request, id):
@@ -145,3 +140,38 @@ def publish_course(request, id):
             "chapters_error": chapters_error,
         },
     )
+
+
+def my_courses(request):
+
+    courses = Course.objects.filter(creator=request.user_data.id)
+
+    results = []
+    for course in courses:
+        chapters = Chapter.objects.filter(course_id=course.id)
+        results.append(
+            {
+                "id": course.id,
+                "title": course.title,
+                "description": course.description,
+                "thumbnail": course.thumbnail,
+                "totalChapters": course.totalChapters,
+                "totalChapters": course.totalChapters,
+                "status": course.status,
+                "price": course.price,
+                "category": course.category,
+                "chapters": [
+                    {
+                        "id": chapter.id,
+                        "title": chapter.title,
+                        "description": chapter.description,
+                        "thumbnail": chapter.thumbnail,
+                        "video": chapter.video,
+                        "chapter_number": chapter.chapter_number,
+                    }
+                    for chapter in chapters
+                ],
+            }
+        )
+    print(results)
+    return JsonResponse({"results": results}, status=200)

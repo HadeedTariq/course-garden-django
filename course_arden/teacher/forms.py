@@ -1,5 +1,8 @@
 from django.forms import ModelForm
 from django import forms
+from djmoney.models.fields import MoneyField
+
+
 from .models import Course, Chapter, CouponCode
 
 
@@ -9,6 +12,9 @@ class CourseForm(ModelForm):
         fields = "__all__"
         widgets = {
             "thumbnail": forms.FileInput(attrs={"placeholder": "Upload thumbnail"}),
+            "price": MoneyField(
+                attrs={"placeholder": "Enter course price", "class": "money-field"}
+            ),
         }
         exclude = [
             "creator",
