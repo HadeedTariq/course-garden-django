@@ -25,6 +25,7 @@ urlpatterns = [
     path("auth/", include("authentication.urls")),
     path("accounts/", include("allauth.urls"), name="accounts"),
     path("teacher/", include("teacher.urls")),
+    path("student/", include("student.urls")),
 ]
 
 if settings.DEBUG:

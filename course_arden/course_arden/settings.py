@@ -59,11 +59,13 @@ INSTALLED_APPS = [
     "cloudinary",
     "cloudinary_storage",
     "teacher",
+    "student",
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "teacher.middleware.TeacherMiddleware",
+    "student.middleware.StudentMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",

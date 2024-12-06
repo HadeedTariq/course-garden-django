@@ -37,7 +37,7 @@ def create_course(request):
                 course = Course.objects.create(
                     title=title,
                     description=description,
-                    price=actual_price,
+                    price=str(actual_price),
                     totalChapters=totalChapters,
                     category=category,
                     status=status,

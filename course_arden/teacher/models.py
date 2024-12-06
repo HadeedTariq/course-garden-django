@@ -29,15 +29,7 @@ class Course(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
     thumbnail = models.CharField(max_length=255, default="fallback.webp")
-    price = MoneyField(
-        max_digits=14,
-        decimal_places=2,
-        default_currency="USD",
-        null=True,
-        default=None,
-        blank=True,
-    )
-
+    price = models.CharField(max_length=255)
     totalChapters = models.IntegerField()
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
     status = models.CharField(
