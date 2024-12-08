@@ -37,8 +37,9 @@ def generate_refresh_access_token(user):
         "email": user.email,  # Issued at time
         "qualification": user.qualification,  # Issued at time
         "avatar": user.avatar,  # Issued at time
+        "id": user.id,  # Issued at time
     }
-    refresh_payload = {"username": user.username}
+    refresh_payload = {"id": user.id}
 
     access_token = jwt.encode(
         access_payload,

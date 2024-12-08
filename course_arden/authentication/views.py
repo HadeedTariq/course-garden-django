@@ -178,27 +178,10 @@ def logout_user(
 
 @login_required
 def register_google(request):
-    try:
-        social_account = SocialAccount.objects.filter(user=request.user).first()
-        if social_account:
-            user = User.objects.get(email=social_account.extra_data.get("email"))
-            if user:
-                tokens = generate_refresh_access_token(user)
-
-                response = JsonResponse(
-                    {"message": "User Logged In successfully."}, status=200
-                )
-
-                response.set_cookie(
-                    "access_token", tokens["access_token"], max_age=3600
-                )
-                response.set_cookie(
-                    "refresh_token", tokens["refresh_token"], max_age=3600 * 2
-                )
-                return response
-
-        if not social_account:
-            return JsonResponse({"error": "No social account found."}, status=404)
+    errormessage = ""
+    successmessage = ""
+    social_account = SocialAccount.objects.filter(user=request.user).first()
+    if social_account:
         if request.method == "POST":
             post_data = request.POST.copy()
             extra_data = social_account.extra_data
@@ -214,14 +197,17 @@ def register_google(request):
             post_data.update(more_data)
             form = GoogleRegisterForm(data=post_data)
             if form.is_valid():
+
                 user_profile = form.save(commit=False)
                 user_profile.username = extra_data.get("name")
                 user_profile.email = extra_data.get("email")
                 user_profile.avatar = extra_data.get("picture")
                 user_profile.verified = True
+                user_profile.save()
                 tokens = generate_refresh_access_token(user_profile)
                 user_profile.refresh_token = tokens["refresh_token"]
                 user_profile.save()
+
                 response = JsonResponse(
                     {"message": "User registered successfully."}, status=200
                 )
@@ -233,10 +219,50 @@ def register_google(request):
                     "refresh_token", tokens["refresh_token"], max_age=3600 * 2
                 )
                 return response
-        else:
+            else:
+                errormessage = "Invalid form data."
+                form = GoogleRegisterForm()
+                return render(
+                    request,
+                    "authentication/google-register.html",
+                    {
+                        "form": form,
+                        "successmessage": successmessage,
+                        "errormessage": errormessage,
+                    },
+                )
+
+        try:
+            user = User.objects.get(email=social_account.extra_data.get("email"))
+            tokens = generate_refresh_access_token(user)
+
+            response = JsonResponse(
+                {"message": "User Logged In successfully."}, status=200
+            )
+
+            response.set_cookie("access_token", tokens["access_token"], max_age=3600)
+            response.set_cookie(
+                "refresh_token", tokens["refresh_token"], max_age=3600 * 2
+            )
+            return response
+        except Exception as e:
             form = GoogleRegisterForm()
             return render(
-                request, "authentication/google-register.html", {"form": form}
+                request,
+                "authentication/google-register.html",
+                {
+                    "form": form,
+                    "successmessage": successmessage,
+                    "errormessage": errormessage,
+                },
             )
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
+
+    if not social_account:
+        return JsonResponse({"error": "No social account found."}, status=404)
+    else:
+        form = GoogleRegisterForm()
+        return render(
+            request,
+            "authentication/google-register.html",
+            {"form": form, "successmessage": "", "errormessage": ""},
+        )

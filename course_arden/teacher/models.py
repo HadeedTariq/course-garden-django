@@ -51,6 +51,12 @@ class Course(models.Model):
             return {"error": None}
 
 
+class CourseEnrollement(models.Model):
+    id = models.AutoField(primary_key=True)
+    student_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    course_id = models.ForeignKey(Course, on_delete=models.CASCADE)
+
+
 class Chapter(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()

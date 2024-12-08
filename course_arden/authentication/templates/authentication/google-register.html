@@ -11,5 +11,10 @@
 
       <button type="submit">Register</button>
     </form>
+    {% if successmessage %}
+    <p>{{successmessage}}</p>
+    {% endif %} {% if errormessage %}
+    <p>{{errormessage}}</p>
+    {% endif %}
   </body>
 </html>

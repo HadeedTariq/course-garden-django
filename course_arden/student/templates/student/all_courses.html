@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Course Cards</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f8f9fa;
+      }
+
+      .container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        padding: 20px;
+        justify-content: center;
+      }
+
+      .card {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        width: 300px;
+      }
+
+      .card img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+      }
+
+      .card-body {
+        padding: 16px;
+      }
+
+      .card-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 8px;
+      }
+
+      .card-description {
+        font-size: 0.9rem;
+        color: #555;
+        margin-bottom: 12px;
+      }
+
+      .creator-info {
+        display: flex;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+
+      .creator-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 10px;
+      }
+
+      .creator-details {
+        font-size: 0.9rem;
+        color: #333;
+      }
+
+      .price {
+        font-size: 1rem;
+        font-weight: bold;
+        margin-bottom: 12px;
+      }
+
+      .enroll-button {
+        display: inline-block;
+        padding: 10px 16px;
+        background-color: #007bff;
+        color: #fff;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 4px;
+        font-weight: bold;
+        transition: background-color 0.3s;
+      }
+
+      .enroll-button:hover {
+        background-color: #0056b3;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      {% for course in courses %}
+      <div class="card">
+        <img
+          src="https://res.cloudinary.com/lmsproject/image/upload/v1733306801/qvmmsjq3l295lgbxfdph.png"
+          alt="Course Thumbnail"
+        />
+        <div class="card-body">
+          <h2 class="card-title">{{ course.title }}</h2>
+          <p class="card-description">{{ course.description }}</p>
+          <div class="creator-info">
+            <img
+              class="creator-avatar"
+              src="{{course.creator.avatar}}"
+              alt="Creator Avatar"
+            />
+            <div class="creator-details">
+              <div>Username: {{course.creator.username}}</div>
+              <div>Email: {{course.creator.email}}</div>
+            </div>
+          </div>
+          <div class="price">Price: {{course.price}}</div>
+          <form action="{% url 'student:enrollInCourse'%}" method="post">
+            {% csrf_token %}
+            <button type="submit" name="course_id" value="{{course.id}}">
+              Enroll Course
+            </button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </body>
+</html>

@@ -17,7 +17,7 @@ class ChapterSerializer(serializers.ModelSerializer):
 
 class CourseSerializer(serializers.ModelSerializer):
     creator = UserSerializer()
-    chapters = ChapterSerializer(many=True)
+    chapters = serializers.SerializerMethodField()
 
     class Meta:
         model = Course
@@ -32,3 +32,9 @@ class CourseSerializer(serializers.ModelSerializer):
             "category",
             "status",
         ]
+
+    def get_chapters(self, obj):
+        if obj.status == "free":
+            chapters = obj.chapters.all()
+            return ChapterSerializer(chapters, many=True).data
+        return None
