@@ -2,12 +2,14 @@ from django.db import connection
 from django.http import JsonResponse
 from django.shortcuts import render
 
+from student.forms import CouponForm
+
 from .serializers import CourseSerializer
 from teacher.models import Course, CourseEnrollement
 
 
 # Create your views here.
-def get_courses(request):
+def getCourses(request):
     if request.user_data:
         courses = (
             Course.objects.filter(is_publish=True)
@@ -50,3 +52,16 @@ def enrollInCourse(request):
             )
     else:
         return JsonResponse({"message": "Invalid request method."}, status=405)
+
+
+def applyCouponCode(request):
+    successmessage = ""
+    errormessage = ""
+    if request.method == "POST":
+        return ""
+    form = CouponForm()
+    return render(
+        request,
+        "student/apply_coupon_code.html",
+        {"form": form, "successmessage": successmessage, "errormessage": errormessage},
+    )
