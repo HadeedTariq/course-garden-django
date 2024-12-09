@@ -98,6 +98,7 @@ def registerUser(request):
 
 
 def loginUser(request):
+    next_url = request.GET.get("next")
     errormessage = ""
     successmessage = ""
     if request.method == "POST":
@@ -109,7 +110,7 @@ def loginUser(request):
             if is_password_correct:
                 successmessage += "Login successful"
                 tokens = generate_refresh_access_token(user)
-                response = HttpResponseRedirect("/auth/profile")
+                response = HttpResponseRedirect(f"/auth/profile")
                 response.set_cookie(
                     "access_token", tokens["access_token"], max_age=3600
                 )
@@ -133,7 +134,12 @@ def loginUser(request):
     return render(
         request,
         "authentication/login-user.html",
-        {"form": form, "errormessage": errormessage, "successmessage": successmessage},
+        {
+            "form": form,
+            "errormessage": errormessage,
+            "successmessage": successmessage,
+            "next_url": next_url,
+        },
     )
 
 

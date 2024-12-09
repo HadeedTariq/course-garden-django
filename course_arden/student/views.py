@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 
 from authentication.models import User
+from .decorators import course_middleware_decorator
 from student.forms import CouponForm
 
 from .serializers import CourseSerializer
@@ -29,9 +30,8 @@ def getCourses(request):
     return render(request, "student/all_courses.html", {"courses": courses_data})
 
 
+@course_middleware_decorator
 def enrollInCourse(request):
-    if request.validation_err != "":
-        return JsonResponse({"message": request.validation_err}, status=400)
     if request.method == "POST":
         course_id = request.POST.get("course_id")
         user_id = request.user_data["id"]
@@ -55,12 +55,24 @@ def enrollInCourse(request):
         return JsonResponse({"message": "Invalid request method."}, status=405)
 
 
-def applyCouponCode(request,course_id):
+@course_middleware_decorator
+def applyCouponCode(request, course_id):
     successmessage = ""
     errormessage = ""
     if request.method == "POST":
         coupon = request.POST.get("coupon")
-        is_coupon_exist = CouponCode.objects.get(coupon=coupon,course=course_id,)
+        try:
+            actual_coupon = CouponCode.objects.get(
+                coupon=coupon, course=course_id, quantity__gt=0
+            )
+            errormessage = ""
+            if actual_coupon:
+                actual_coupon.coupon_users.add(request.user_data["id"])
+                actual_coupon.quantity = actual_coupon.quantity - 1
+                actual_coupon.save()
+                successmessage = "Coupon code applied successfully."
+        except Exception as e:
+            errormessage = "Invalid coupon code or coupon not available."
     form = CouponForm()
     return render(
         request,
