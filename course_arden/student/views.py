@@ -2,10 +2,11 @@ from django.db import connection
 from django.http import JsonResponse
 from django.shortcuts import render
 
+from authentication.models import User
 from student.forms import CouponForm
 
 from .serializers import CourseSerializer
-from teacher.models import Course, CourseEnrollement
+from teacher.models import CouponCode, Course, CourseEnrollement
 
 
 # Create your views here.
@@ -54,11 +55,12 @@ def enrollInCourse(request):
         return JsonResponse({"message": "Invalid request method."}, status=405)
 
 
-def applyCouponCode(request):
+def applyCouponCode(request,course_id):
     successmessage = ""
     errormessage = ""
     if request.method == "POST":
-        return ""
+        coupon = request.POST.get("coupon")
+        is_coupon_exist = CouponCode.objects.get(coupon=coupon,course=course_id,)
     form = CouponForm()
     return render(
         request,

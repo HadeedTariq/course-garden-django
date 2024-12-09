@@ -1,20 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Register User</title>
-  </head>
-  <body>
-    <form method="post">
-      {% csrf_token %} {{form.as_p}}
 
-      <button type="submit">Apply</button>
-      {% if successmessage %}
-      <p>{{successmessage}}</p>
-      {% endif %} {% if errormessage %}
-      <p>{{errormessage}}</p>
-      {% endif %}
-    </form>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Apply Coupon Code</title>
+</head>
+
+<body>
+  <form method="post">
+    {% csrf_token %} {{form.as_p}}
+
+    <button type="submit">Apply</button>
+    {% if successmessage %}
+    <p>{{successmessage}}</p>
+    {% endif %} {% if errormessage %}
+    <p>{{errormessage}}</p>
+    {% endif %}
+  </form>
+</body>
+
 </html>

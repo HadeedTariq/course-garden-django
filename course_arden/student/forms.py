@@ -9,7 +9,7 @@ class CouponForm(ModelForm):
         model = CouponCode
         fields = "__all__"
         widgets = {
-            "coupon": forms.Input(attrs={"placeholder": "Enter your Coupon Code"}),
+            "coupon": forms.TextInput(attrs={"placeholder": "Enter your Coupon Code"}),
         }
         exclude = [
             "quantity",

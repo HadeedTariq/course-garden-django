@@ -21,6 +21,7 @@ class StudentMiddleware:
                     return http.HttpResponse("Ivalid Token")
 
             else:
+                request.user_data = None
                 response = self.get_response(request)
                 return response
         elif request.path.startswith("/student/enroll-in-course/"):
