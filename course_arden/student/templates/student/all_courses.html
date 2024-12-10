@@ -96,10 +96,7 @@
     <div class="container">
       {% for course in courses %}
       <div class="card">
-        <img
-          src="https://res.cloudinary.com/lmsproject/image/upload/v1733306801/qvmmsjq3l295lgbxfdph.png"
-          alt="Course Thumbnail"
-        />
+        <img src="{{course.thumbnail}}" alt="Course Thumbnail" />
         <div class="card-body">
           <h2 class="card-title">{{ course.title }}</h2>
           <p class="card-description">{{ course.description }}</p>

@@ -97,16 +97,13 @@
   <body>
     <div class="course-page">
       <div class="course-header">
-        <h1>Learn Web Development</h1>
-        <p>
-          Master HTML, CSS, JavaScript, and React to become a professional web
-          developer.
-        </p>
+        <h1>{{course.title}}</h1>
+        <p>{{course.description}}</p>
       </div>
 
       <div class="course-details">
         <img
-          src="https://via.placeholder.com/300x200"
+          src="{{course.thumbnail}}"
           alt="Course Image"
           class="course-image"
         />
@@ -119,10 +116,17 @@
             <li>Certificate of Completion</li>
           </ul>
           <div class="price">
-            <span class="original-price">$199</span>
-            <span class="discounted-price">$99</span>
+            <span>{{course.price}}</span>
           </div>
           <button class="buy-now">Buy Now</button>
+          {% if not is_coupon_applied %}
+          <a
+            class="buy-now"
+            href="{% url 'student:applyCouponCode' course.id %}"
+            >Apply Coupon Code</a
+          >
+
+          {% endif %}
         </div>
       </div>
     </div>

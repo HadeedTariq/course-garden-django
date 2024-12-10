@@ -17,7 +17,7 @@ def create_course(request):
         if form.is_valid():
             price = request.POST.get("price_0")
             currency = request.POST.get("price_1")
-            actual_price = Money(price, currency)
+            actual_price = Money(price, f" {currency}")
             status = request.POST.get("status")
 
             is_valid_course = Course.price_validation(actual_price, status)

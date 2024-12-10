@@ -1,8 +1,10 @@
+from calendar import c
 from django.db import connection
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 
 from authentication.models import User
+from .utils import parse_price
 from .decorators import course_middleware_decorator
 from student.forms import CouponForm
 
@@ -37,7 +39,6 @@ def enrollInCourse(request):
         user_id = request.user_data["id"]
         if course_id and user_id:
             course = Course.objects.get(id=course_id)
-            print("fdsf")
             if course.status != "paid":
                 course_enrollement = CourseEnrollement.objects.create(
                     student_id=user_id, course_id=course_id
@@ -84,4 +85,17 @@ def applyCouponCode(request, course_id):
 
 @course_middleware_decorator
 def purchase_course(request, course_id):
-    return render(request, "student/course_purchasing.html")
+    user = request.user_data
+    try:
+        course = Course.objects.get(id=course_id)
+        is_coupon_applied = course.coupons.filter(coupon_users__id=user["id"]).exists()
+        currency, amount = parse_price(course.price)
+        if is_coupon_applied:
+            course.price = f"{currency} {amount / 2}"
+        return render(
+            request,
+            "student/course_purchasing.html",
+            {"course": course, "is_coupon_applied": is_coupon_applied},
+        )
+    except Exception as e:
+        return JsonResponse({"message": "Course not found"}, status=404)

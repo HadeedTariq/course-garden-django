@@ -9,7 +9,7 @@ urlpatterns = [
     path(
         "apply-coupon-code/<int:course_id>/",
         views.applyCouponCode,
-        name="appyCouponCode",
+        name="applyCouponCode",
     ),
     path(
         "course/purchase/<int:course_id>",
