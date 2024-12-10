@@ -111,3 +111,12 @@ class Reply(models.Model):
 
     class Meta:
         db_table = "reply"
+
+
+class CoursePoints(models.Model):
+    course_id = models.ForeignKey(Course, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    points = models.IntegerField(default=0)
+
+    class Meta:
+        db_table = "coursepoints"

@@ -11,4 +11,9 @@ urlpatterns = [
         views.applyCouponCode,
         name="appyCouponCode",
     ),
+    path(
+        "course/purchase/<int:course_id>",
+        views.purchase_course,
+        name="pruchaseCourse",
+    ),
 ]

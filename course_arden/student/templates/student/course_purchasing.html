@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Course Purchasing Page</title>
+    <style>
+      .course-page {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      .course-header {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .course-header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+      }
+
+      .course-header p {
+        font-size: 1.2rem;
+        color: #555;
+      }
+
+      .course-details {
+        display: flex;
+        gap: 20px;
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .course-image {
+        flex: 1;
+        border-radius: 8px;
+      }
+
+      .course-info {
+        flex: 2;
+      }
+
+      .course-info h2 {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+      }
+
+      .course-info ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .course-info ul li {
+        margin-bottom: 8px;
+        font-size: 1rem;
+      }
+
+      .price {
+        margin-top: 20px;
+        font-size: 1.5rem;
+        font-weight: bold;
+      }
+
+      .original-price {
+        text-decoration: line-through;
+        color: #999;
+        margin-right: 10px;
+      }
+
+      .discounted-price {
+        color: #e63946;
+      }
+
+      .buy-now {
+        margin-top: 20px;
+        background-color: #007bff;
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      .buy-now:hover {
+        background-color: #0056b3;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="course-page">
+      <div class="course-header">
+        <h1>Learn Web Development</h1>
+        <p>
+          Master HTML, CSS, JavaScript, and React to become a professional web
+          developer.
+        </p>
+      </div>
+
+      <div class="course-details">
+        <img
+          src="https://via.placeholder.com/300x200"
+          alt="Course Image"
+          class="course-image"
+        />
+        <div class="course-info">
+          <h2>Course Highlights</h2>
+          <ul>
+            <li>40+ Hours of Video Content</li>
+            <li>10 Real-world Projects</li>
+            <li>Lifetime Access</li>
+            <li>Certificate of Completion</li>
+          </ul>
+          <div class="price">
+            <span class="original-price">$199</span>
+            <span class="discounted-price">$99</span>
+          </div>
+          <button class="buy-now">Buy Now</button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

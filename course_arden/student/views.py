@@ -1,6 +1,6 @@
 from django.db import connection
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 
 from authentication.models import User
 from .decorators import course_middleware_decorator
@@ -37,6 +37,7 @@ def enrollInCourse(request):
         user_id = request.user_data["id"]
         if course_id and user_id:
             course = Course.objects.get(id=course_id)
+            print("fdsf")
             if course.status != "paid":
                 course_enrollement = CourseEnrollement.objects.create(
                     student_id=user_id, course_id=course_id
@@ -46,7 +47,7 @@ def enrollInCourse(request):
                     {"message": "Course enrolled successfully."}, status=200
                 )
             else:
-                return JsonResponse({"message": "This course is not free."}, status=400)
+                return redirect("student:pruchaseCourse", course_id)
         else:
             return JsonResponse(
                 {"message": "Missing course_id or user_id."}, status=400
@@ -79,3 +80,8 @@ def applyCouponCode(request, course_id):
         "student/apply_coupon_code.html",
         {"form": form, "successmessage": successmessage, "errormessage": errormessage},
     )
+
+
+@course_middleware_decorator
+def purchase_course(request, course_id):
+    return render(request, "student/course_purchasing.html")
