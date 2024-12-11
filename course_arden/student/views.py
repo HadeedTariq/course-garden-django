@@ -1,15 +1,16 @@
 from calendar import c
+from re import S
 from django.db import connection
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
-
 from authentication.models import User
 from .utils import parse_price
 from .decorators import course_middleware_decorator
 from student.forms import CouponForm
-
+import stripe
+from django.conf import settings
 from .serializers import CourseSerializer
-from teacher.models import CouponCode, Course, CourseEnrollement
+from teacher.models import CouponCode, Course, CourseEnrollement, CoursePurchasers
 
 
 # Create your views here.
@@ -98,4 +99,34 @@ def purchase_course(request, course_id):
             {"course": course, "is_coupon_applied": is_coupon_applied},
         )
     except Exception as e:
+        print(e)
+        return JsonResponse({"message": "Course not found"}, status=404)
+stripe.api_key = settings.STRIPE_SECRET_KEY
+@course_middleware_decorator
+def checkout(request,course_id):
+    user = request.user_data
+    if request.method == "POST":
+        try:
+            course = Course.objects.get(id=course_id)
+            is_coupon_applied = course.coupons.filter(coupon_users__id=user["id"]).exists()
+            currency, amount = parse_price(course.price)
+            if is_coupon_applied:
+                course.price = f"{currency} {amount / 2}"     
+            intent = stripe.PaymentIntent.create(
+                amount=course.price * 100,  
+                currency=f"{currency}",
+                metadata={"integration_check": "accept_a_payment"},
+            )
+            if intent is not None:
+                purchaser=CoursePurchasers.objects.create(course_id=course_id,student_id=user["id"],price=f"{currency} {course.price}")
+                purchaser.save()
+                return JsonResponse({'clientSecret': intent['client_secret']})
+        except Exception as e:
+            print(e)
+            return JsonResponse({'error': str(e)})
+    try:
+        course = Course.objects.get(id=course_id)
+        return render(request, "student/checkout.html", {"publishable_key": settings.STRIPE_PUBLIC_KEY})
+    except Exception as e:
+        print(e)
         return JsonResponse({"message": "Course not found"}, status=404)

@@ -118,7 +118,9 @@
           <div class="price">
             <span>{{course.price}}</span>
           </div>
-          <button class="buy-now">Buy Now</button>
+          <a class="buy-now" href="{% url 'student:courseCheckout' course.id %}"
+            >Buy Now</a
+          >
           {% if not is_coupon_applied %}
           <a
             class="buy-now"

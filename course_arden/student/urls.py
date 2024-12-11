@@ -16,4 +16,9 @@ urlpatterns = [
         views.purchase_course,
         name="pruchaseCourse",
     ),
+    path(
+        "course/checkout/purchase/<int:course_id>",
+        views.checkout,
+        name="courseCheckout",
+    ),
 ]

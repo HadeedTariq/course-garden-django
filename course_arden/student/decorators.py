@@ -14,12 +14,10 @@ def course_middleware_decorator(view_func):
             try:
                 user = utils.validate_access_token(access_token)
                 request.validation_err = ""
-
                 request.user_data = user
                 return view_func(request, *args, **kwargs)
             except Exception as e:
                 return http.HttpResponse("Ivalid Token")
-
         else:
             return redirect(f"/auth/login?next={pathname}")
 
