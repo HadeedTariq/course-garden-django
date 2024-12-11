@@ -10,6 +10,7 @@ def course_middleware_decorator(view_func):
     def _wrapped_view(request, *args, **kwargs):
         access_token = request.COOKIES.get("access_token")
         pathname = request.path
+        print("path")
         if access_token:
             try:
                 user = utils.validate_access_token(access_token)
