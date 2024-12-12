@@ -5,6 +5,8 @@ app_name = "student"
 
 urlpatterns = [
     path("get-courses/", views.getCourses, name="getCourses"),
+    path("watch-course/<int:course_id>", views.watchCourse, name="watchCourse"),
+    path("course/feedback/<int:course_id>", views.feedback, name="feedback"),
     path("enroll-in-course/", views.enrollInCourse, name="enrollInCourse"),
     path(
         "apply-coupon-code/<int:course_id>/",
@@ -25,5 +27,10 @@ urlpatterns = [
         "myPurchasedCourses/",
         views.myPurchasedCourses,
         name="myPurchasedCourses",
+    ),
+    path(
+        "myPoints/",
+        views.getErolledCoursePoints,
+        name="myPoints",
     ),
 ]

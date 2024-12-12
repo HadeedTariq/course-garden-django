@@ -54,9 +54,15 @@ class Course(models.Model):
 class CourseEnrollement(models.Model):
     id = models.AutoField(primary_key=True)
     student_id = models.ForeignKey(User, on_delete=models.CASCADE)
-    course_id = models.ForeignKey(Course, on_delete=models.CASCADE,related_name="course_enrollements")
-    
-    
+    course_id = models.ForeignKey(
+        Course, on_delete=models.CASCADE, related_name="course_enrollements"
+    )
+    points = models.IntegerField(default=0)
+
+    class Meta:
+        db_table = "courseenrollements"
+
+
 class CoursePurchasers(models.Model):
     id = models.AutoField(primary_key=True)
     student_id = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -118,12 +124,3 @@ class Reply(models.Model):
 
     class Meta:
         db_table = "reply"
-
-
-class CoursePoints(models.Model):
-    course_id = models.ForeignKey(Course, on_delete=models.CASCADE)
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
-    points = models.IntegerField(default=0)
-
-    class Meta:
-        db_table = "coursepoints"

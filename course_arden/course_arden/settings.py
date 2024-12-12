@@ -58,10 +58,19 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.google",
     "rest_framework",
     "cloudinary",
+    "channels",
     "cloudinary_storage",
     "teacher",
     "student",
 ]
+ASGI_APPLICATION = "course_arden.asgi.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    },
+}
+
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

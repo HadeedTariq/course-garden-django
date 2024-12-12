@@ -1,5 +1,6 @@
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
+from django.db.models import Sum
 from .utils import parse_price
 from .decorators import course_middleware_decorator
 from student.forms import CouponForm
@@ -25,10 +26,33 @@ def getCourses(request):
             .select_related("creator")
             .prefetch_related("chapters")
         )
-    serializer = CourseSerializer(courses, many=True,context ={"user_id":(request.user_data and request.user_data['id']) or None})
+    serializer = CourseSerializer(
+        courses,
+        many=True,
+        context={"user_id": (request.user_data and request.user_data["id"]) or None},
+    )
     courses_data = serializer.data
 
     return render(request, "student/all_courses.html", {"courses": courses_data})
+
+
+@course_middleware_decorator
+def watchCourse(request, course_id):
+    try:
+        course = Course.objects.filter(id=course_id).first()
+        return render(request, "student/watch-course.html", {"course": course})
+    except Exception as e:
+        print(e)
+        return JsonResponse({"message": "Course not found."}, status=404)
+
+
+@course_middleware_decorator
+def feedback(request, course_id):
+    try:
+        course = Course.objects.filter(id=course_id).first()
+        return render(request, "student/feedback.html", {"course": course})
+    except Exception as e:
+        return JsonResponse({"message": "Course not found."}, status=404)
 
 
 @course_middleware_decorator
@@ -102,6 +126,8 @@ def purchase_course(request, course_id):
 
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
+
+
 @csrf_exempt
 @course_middleware_decorator
 def checkout(request, course_id):
@@ -131,7 +157,7 @@ def checkout(request, course_id):
                     student_id_id=user["id"],
                     course_id=course,
                 )
-                
+
                 enrollment.save()
                 purchaser.save()
                 return JsonResponse({"clientSecret": intent["client_secret"]})
@@ -150,14 +176,26 @@ def checkout(request, course_id):
             print(e)
             return JsonResponse({"message": "Course not found"}, status=404)
 
+
 @course_middleware_decorator
 def myPurchasedCourses(request):
     purchases = CoursePurchasers.objects.filter(student_id_id=request.user_data["id"])
     try:
-        serializer = PurchaseCourseSerializer(purchases,many=True)
+        serializer = PurchaseCourseSerializer(purchases, many=True)
         print(serializer.data)
-        return JsonResponse({"courses":serializer.data},status=200)
+        return JsonResponse({"courses": serializer.data}, status=200)
     except Exception as e:
         print(e)
         return JsonResponse({"message": "No purchases found"}, status=404)
-    
+
+
+@course_middleware_decorator
+def getErolledCoursePoints(request):
+    try:
+        courses_points = CourseEnrollement.objects.filter(
+            student_id_id=request.user_data["id"]
+        ).aggregate(total_points=Sum("points"))
+        return JsonResponse({"coursesPoints": courses_points}, status=200)
+    except Exception as e:
+        print(e)
+        return JsonResponse({"message": "No purchases found"}, status=404)

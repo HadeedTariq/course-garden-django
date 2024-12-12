@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Course Page</title>
+    <style>
+      /* General Styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        color: #333;
+      }
+
+      /* Header Section */
+      .course-header {
+        background-color: #001c37;
+        color: #fff;
+        text-align: center;
+        padding: 40px 20px;
+      }
+
+      .course-title {
+        font-size: 3rem;
+        margin-bottom: 10px;
+      }
+
+      .course-description {
+        font-size: 1.2rem;
+        font-weight: 300;
+      }
+
+      /* Course Details Section */
+      .course-details {
+        display: flex;
+        justify-content: space-between;
+        padding: 40px 20px;
+        background-color: #fff;
+      }
+
+      .course-image img {
+        width: 100%;
+        max-width: 600px;
+        border-radius: 8px;
+      }
+
+      .course-info {
+        max-width: 500px;
+        padding: 20px;
+      }
+
+      .course-info h2 {
+        font-size: 2rem;
+        margin-bottom: 20px;
+      }
+
+      .course-info p {
+        font-size: 1.1rem;
+        margin-bottom: 10px;
+      }
+
+      .enroll-btn {
+        background-color: #001c37;
+        color: #fff;
+        font-size: 1.1rem;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      .enroll-btn:hover {
+        background-color: #00457c;
+      }
+
+      /* Course Curriculum Section */
+      .course-curriculum {
+        padding: 40px 20px;
+        background-color: #e9ecef;
+      }
+
+      .course-curriculum h2 {
+        font-size: 2rem;
+        margin-bottom: 20px;
+      }
+
+      .course-curriculum ul {
+        list-style-type: none;
+      }
+
+      .course-curriculum li {
+        font-size: 1.1rem;
+        margin: 10px 0;
+      }
+
+      /* Footer Section */
+      .course-footer {
+        text-align: center;
+        padding: 20px;
+        background-color: #001c37;
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Course Header Section -->
+    <header class="course-header">
+      <h1 class="course-title">Learn Web Development</h1>
+      <p class="course-description">
+        Master the fundamentals of web development with this comprehensive
+        course.
+      </p>
+    </header>
+
+    <!-- Course Details Section -->
+    <section class="course-details">
+      <div class="course-image">
+        <img src="https://via.placeholder.com/600x400" alt="Course Image" />
+      </div>
+      <div class="course-info">
+        <h2>Course Information</h2>
+        <p><strong>Instructor:</strong> John Doe</p>
+        <p><strong>Duration:</strong> 6 weeks</p>
+        <p><strong>Level:</strong> Beginner to Intermediate</p>
+        <p><strong>Price:</strong> $199</p>
+        <button class="enroll-btn">Enroll Now</button>
+        <a href="{% url 'student:feedback' course.id %}">Feedback</a>
+      </div>
+    </section>
+
+    <!-- Course Curriculum Section -->
+    <section class="course-curriculum">
+      <h2>Course Curriculum</h2>
+      <ul>
+        <li><strong>Week 1:</strong> Introduction to HTML & CSS</li>
+        <li><strong>Week 2:</strong> JavaScript Basics</li>
+        <li><strong>Week 3:</strong> Responsive Design</li>
+        <li><strong>Week 4:</strong> Advanced JavaScript</li>
+        <li><strong>Week 5:</strong> Web Development Tools</li>
+        <li><strong>Week 6:</strong> Final Project</li>
+      </ul>
+    </section>
+
+    <!-- Footer Section -->
+    <footer class="course-footer">
+      <p>&copy; 2024 WebDev Academy | All Rights Reserved</p>
+    </footer>
+  </body>
+</html>

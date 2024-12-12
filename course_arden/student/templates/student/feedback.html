@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Feedback Form</title>
+    <style>
+      /* General Styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        color: #333;
+        padding: 20px;
+      }
+
+      /* Container for Feedback */
+      .feedback-container {
+        max-width: 600px;
+        margin: auto;
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      textarea {
+        width: 100%;
+        height: 100px;
+        padding: 10px;
+        font-size: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        margin-bottom: 15px;
+      }
+
+      button {
+        background-color: #001c37;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1rem;
+      }
+
+      button:hover {
+        background-color: #00457c;
+      }
+
+      /* Feedback List */
+      .feedback-item {
+        background-color: #f9f9f9;
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .feedback-item .feedback-text {
+        font-size: 1rem;
+        margin-bottom: 10px;
+      }
+
+      .reply-btn {
+        background-color: #009688;
+        color: white;
+        padding: 5px 10px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .reply-btn:hover {
+        background-color: #00796b;
+      }
+
+      .reply-section {
+        margin-top: 15px;
+        display: none;
+        margin-top: 10px;
+      }
+
+      .reply-section textarea {
+        width: 100%;
+        height: 50px;
+        padding: 8px;
+        font-size: 1rem;
+        margin-bottom: 10px;
+      }
+
+      .reply-section button {
+        background-color: #607d8b;
+      }
+
+      .reply-section button:hover {
+        background-color: #455a64;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="feedback-container">
+      <h1>Feedback Form</h1>
+
+      <!-- Feedback Form -->
+      <form id="feedbackForm">
+        <textarea
+          id="feedbackText"
+          placeholder="Write your feedback..."
+          required
+        ></textarea>
+        <button type="submit">Submit Feedback</button>
+      </form>
+
+      <div id="feedbackList"></div>
+    </div>
+
+    <script>
+      // Feedback form submission handler
+      document
+        .getElementById("feedbackForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          // Get feedback text
+          const feedbackText = document.getElementById("feedbackText").value;
+
+          if (feedbackText) {
+            // Create feedback item
+            const feedbackItem = document.createElement("div");
+            feedbackItem.classList.add("feedback-item");
+
+            feedbackItem.innerHTML = `
+            <p class="feedback-text">${feedbackText}</p>
+            <button class="reply-btn">Reply</button>
+            <div class="reply-section">
+                <textarea placeholder="Write your reply..."></textarea>
+                <button>Submit Reply</button>
+            </div>
+        `;
+
+            // Append to feedback list
+            document.getElementById("feedbackList").appendChild(feedbackItem);
+
+            // Clear feedback form
+            document.getElementById("feedbackText").value = "";
+          }
+        });
+
+      // Toggle reply section visibility
+      document
+        .getElementById("feedbackList")
+        .addEventListener("click", function (e) {
+          if (e.target && e.target.classList.contains("reply-btn")) {
+            const replySection = e.target.nextElementSibling;
+            replySection.style.display =
+              replySection.style.display === "block" ? "none" : "block";
+          }
+        });
+    </script>
+  </body>
+</html>
