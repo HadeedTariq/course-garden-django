@@ -21,4 +21,9 @@ urlpatterns = [
         views.checkout,
         name="courseCheckout",
     ),
+    path(
+        "myPurchasedCourses/",
+        views.myPurchasedCourses,
+        name="myPurchasedCourses",
+    ),
 ]

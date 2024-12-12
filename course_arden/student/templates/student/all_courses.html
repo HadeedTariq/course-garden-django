@@ -112,12 +112,16 @@
             </div>
           </div>
           <div class="price">Price: {{course.price}}</div>
+          {% if course.is_enroll %}
+          <a href="/" name="course_id" value="{{course.id}}"> Watch Course </a>
+          {% else %}
           <form action="{% url 'student:enrollInCourse'%}" method="post">
             {% csrf_token %}
             <button type="submit" name="course_id" value="{{course.id}}">
               Enroll Course
             </button>
           </form>
+          {% endif %}
         </div>
       </div>
       {% endfor %}

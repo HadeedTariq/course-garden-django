@@ -5,7 +5,7 @@ from .decorators import course_middleware_decorator
 from student.forms import CouponForm
 import stripe
 from django.conf import settings
-from .serializers import CourseSerializer
+from .serializers import CourseSerializer, PurchaseCourseSerializer
 from teacher.models import CouponCode, Course, CourseEnrollement, CoursePurchasers
 from django.views.decorators.csrf import csrf_exempt
 
@@ -25,8 +25,9 @@ def getCourses(request):
             .select_related("creator")
             .prefetch_related("chapters")
         )
-    serializer = CourseSerializer(courses, many=True)
+    serializer = CourseSerializer(courses, many=True,context ={"user_id":(request.user_data and request.user_data['id']) or None})
     courses_data = serializer.data
+
     return render(request, "student/all_courses.html", {"courses": courses_data})
 
 
@@ -101,14 +102,11 @@ def purchase_course(request, course_id):
 
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
-
-
 @csrf_exempt
 @course_middleware_decorator
 def checkout(request, course_id):
     user = request.user_data
     if request.method == "POST":
-
         try:
             course = Course.objects.get(id=course_id)
             is_coupon_applied = course.coupons.filter(
@@ -129,6 +127,12 @@ def checkout(request, course_id):
                     student_id_id=user["id"],
                     price=f"{currency} {amount}",
                 )
+                enrollment = CourseEnrollement.objects.create(
+                    student_id_id=user["id"],
+                    course_id=course,
+                )
+                
+                enrollment.save()
                 purchaser.save()
                 return JsonResponse({"clientSecret": intent["client_secret"]})
         except Exception as e:
@@ -145,3 +149,15 @@ def checkout(request, course_id):
         except Exception as e:
             print(e)
             return JsonResponse({"message": "Course not found"}, status=404)
+
+@course_middleware_decorator
+def myPurchasedCourses(request):
+    purchases = CoursePurchasers.objects.filter(student_id_id=request.user_data["id"])
+    try:
+        serializer = PurchaseCourseSerializer(purchases,many=True)
+        print(serializer.data)
+        return JsonResponse({"courses":serializer.data},status=200)
+    except Exception as e:
+        print(e)
+        return JsonResponse({"message": "No purchases found"}, status=404)
+    

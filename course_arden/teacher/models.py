@@ -54,7 +54,7 @@ class Course(models.Model):
 class CourseEnrollement(models.Model):
     id = models.AutoField(primary_key=True)
     student_id = models.ForeignKey(User, on_delete=models.CASCADE)
-    course_id = models.ForeignKey(Course, on_delete=models.CASCADE)
+    course_id = models.ForeignKey(Course, on_delete=models.CASCADE,related_name="course_enrollements")
     
     
 class CoursePurchasers(models.Model):
