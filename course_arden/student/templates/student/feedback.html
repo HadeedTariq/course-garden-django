@@ -168,5 +168,21 @@
           }
         });
     </script>
+
+    <script>
+      const socket = new WebSocket("ws://127.0.0.1:8000/ws/feedback/");
+
+      socket.onopen = function (e) {
+        console.log("WebSocket connection established!");
+      };
+
+      socket.onmessage = function (event) {
+        console.log("Message from server:", event.data);
+      };
+
+      socket.onerror = function (error) {
+        console.error("WebSocket error:", error);
+      };
+    </script>
   </body>
 </html>
