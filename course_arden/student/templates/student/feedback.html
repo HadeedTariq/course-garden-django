@@ -137,23 +137,11 @@
 
           if (feedbackText) {
             // Create feedback item
-            const feedbackItem = document.createElement("div");
-            feedbackItem.classList.add("feedback-item");
-
-            feedbackItem.innerHTML = `
-            <p class="feedback-text">${feedbackText}</p>
-            <button class="reply-btn">Reply</button>
-            <div class="reply-section">
-                <textarea placeholder="Write your reply..."></textarea>
-                <button>Submit Reply</button>
-            </div>
-        `;
-
-            // Append to feedback list
-            document.getElementById("feedbackList").appendChild(feedbackItem);
-
-            // Clear feedback form
-            document.getElementById("feedbackText").value = "";
+            socket.send(
+              JSON.stringify({
+                message: feedbackText,
+              })
+            );
           }
         });
 
@@ -177,7 +165,24 @@
       };
 
       socket.onmessage = function (event) {
-        console.log("Message from server:", event.data);
+        const feedbackItem = document.createElement("div");
+        console.log("Sdsd");
+        feedbackItem.classList.add("feedback-item");
+
+        feedbackItem.innerHTML = `
+            <p class="feedback-text">${event.data}</p>
+            <button class="reply-btn">Reply</button>
+            <div class="reply-section">
+                <textarea placeholder="Write your reply..."></textarea>
+                <button>Submit Reply</button>
+            </div>
+        `;
+
+        // Append to feedback list
+        document.getElementById("feedbackList").appendChild(feedbackItem);
+
+        // Clear feedback form
+        document.getElementById("feedbackText").value = "";
       };
 
       socket.onerror = function (error) {

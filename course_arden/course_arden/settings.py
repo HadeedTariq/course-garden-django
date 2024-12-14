@@ -38,15 +38,16 @@ JWT_ALGORITHM = "HS256"
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    '0.0.0.0',
-    'localhost',
-    '127.0.0.1',
+    "0.0.0.0",
+    "localhost",
+    "127.0.0.1",
 ]
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
