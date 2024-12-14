@@ -1,21 +1,38 @@
-from channels.generic.websocket import WebsocketConsumer
+from channels.generic.websocket import AsyncWebsocketConsumer
 import json
 import logging
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
+
+
 
 logger = logging.getLogger("django")
 
 
-class FeedbackConsumer(WebsocketConsumer):
-    def connect(self):
+class FeedbackConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
         logger.info(f"WebSocket connection from {self.scope['client']}")
-        self.accept()
+        await self.channel_layer.group_add("broadcast", self.channel_name)
+        await self.accept()
 
-    def disconnect(self, close_code):
+    async def disconnect(self, close_code):
         pass
 
-    def receive(self, text_data):
+    async def receive(self, text_data):
         text_data_json = json.loads(text_data)
+        message = text_data_json['message']
+        await self.channel_layer.group_send(
+                "broadcast",
+                {
+                    "type": "broadcast_message",  # This maps to the broadcast_message function below
+                    "message": message,
+                }
+            )
+    async def broadcast_message(self, event):
+        message = event["message"]
+        await self.send(text_data=json.dumps({"message": message}))
 
-        self.channel_layer.group_send(
-            text_data=json.dumps({"message": text_data_json["message"]})
-        )
+        
+
+
+        
