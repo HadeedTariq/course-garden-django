@@ -140,6 +140,7 @@
             socket.send(
               JSON.stringify({
                 message: feedbackText,
+                message_type: "feedback",
               })
             );
           }
@@ -168,7 +169,6 @@
 
       socket.onmessage = function (event) {
         const feedbackItem = document.createElement("div");
-        console.log("Sdsd");
         feedbackItem.classList.add("feedback-item");
 
         feedbackItem.innerHTML = `
@@ -176,7 +176,7 @@
             <button class="reply-btn">Reply</button>
             <div class="reply-section">
                 <textarea placeholder="Write your reply..."></textarea>
-                <button>Submit Reply</button>
+                <button >Submit Reply</button>
             </div>
         `;
 
