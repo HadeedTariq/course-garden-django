@@ -48,11 +48,14 @@ def watchCourse(request, course_id):
 
 @course_middleware_decorator
 def feedback(request, course_id):
-    try:
-        course = Course.objects.filter(id=course_id).first()
-        return render(request, "student/feedback.html", {"course": course})
-    except Exception as e:
-        return JsonResponse({"message": "Course not found."}, status=404)
+    # try:
+    #     course = Course.objects.filter(id=course_id).first()
+    #     return render(request, "student/feedback.html", {"course": course})
+    # except Exception as e:
+    #     return JsonResponse({"message": "Course not found."}, status=404)
+    return render(
+        request, "student/feedback.html", {"course": {}, "course_id": course_id}
+    )
 
 
 @course_middleware_decorator

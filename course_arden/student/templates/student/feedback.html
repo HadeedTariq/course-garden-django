@@ -158,7 +158,9 @@
     </script>
 
     <script>
-      const socket = new WebSocket("ws://127.0.0.1:8000/ws/feedback/");
+      const socket = new WebSocket(
+        "ws://127.0.0.1:8000/ws/feedback/{{course_id}}"
+      );
 
       socket.onopen = function (e) {
         console.log("WebSocket connection established!");
