@@ -87,7 +87,6 @@
 
       .reply-section {
         margin-top: 15px;
-        display: none;
         margin-top: 10px;
       }
 
@@ -173,8 +172,7 @@
           feedbackItem.classList.add("feedback-item");
           feedbackItem.innerHTML = `
               <p class="feedback-text">${data.message}</p>
-              <button class="reply-btn">Reply</button>
-              <div class="reply-section">
+              <div class="reply-section" id="reply-section-${data.feedback_id}">
                   <textarea placeholder="Write your reply..." id="reply-${data.feedback_id}"></textarea>
                   <button name="${data.feedback_id}" class="submit-reply">Submit Reply</button>
               </div>
@@ -196,11 +194,22 @@
                     feedback_id: Number(e.target.name),
                   })
                 );
+                feedbackText.value = "";
               });
             });
           }
-          // Clear feedback form
           document.getElementById("feedbackText").value = "";
+        } else if (data.message_type === "reply") {
+          const feedbackItem = document.createElement("div");
+          feedbackItem.classList.add("feedback-item");
+          feedbackItem.innerHTML = `
+              <p class="feedback-text">${data.message}</p>
+          `;
+
+          document
+            .getElementById(`reply-section-${data.feedback_id}`)
+            .appendChild(feedbackItem);
+          document.getElementById(`reply-${data.feedback_id}`).value = "";
         }
       };
 
