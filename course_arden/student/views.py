@@ -6,8 +6,14 @@ from .decorators import course_middleware_decorator
 from student.forms import CouponForm
 import stripe
 from django.conf import settings
-from .serializers import CourseSerializer, PurchaseCourseSerializer
-from teacher.models import CouponCode, Course, CourseEnrollement, CoursePurchasers
+from .serializers import CourseSerializer, FeedbackSerializer, PurchaseCourseSerializer
+from teacher.models import (
+    CouponCode,
+    Course,
+    CourseEnrollement,
+    CoursePurchasers,
+    Feedback,
+)
 from django.views.decorators.csrf import csrf_exempt
 
 
@@ -49,14 +55,28 @@ def watchCourse(request, course_id):
 @course_middleware_decorator
 def feedback(request, course_id):
     user_data = request.user_data
-    # try:
-    #     course = Course.objects.filter(id=course_id).first()
-    #     return render(request, "student/feedback.html", {"course": course})
-    # except Exception as e:
-    #     return JsonResponse({"message": "Course not found."}, status=404)
-    return render(
-        request, "student/feedback.html", {"course": {}, "course_id": course_id,'user':user_data}
-    )
+    try:
+        course = Course.objects.filter(id=course_id).first()
+        if not course:
+            return JsonResponse({"message": "Course not found."}, status=404)
+        feedbacks = (
+            Feedback.objects.filter(course=course)
+            .select_related("replies")
+            .select_related("user")
+        )
+        feedback_serializer = FeedbackSerializer(
+            feedbacks,
+            many=True,
+        )
+        print(feedback_serializer.data)
+        return render(
+            request,
+            "student/feedback.html",
+            {"course": course, "course_id": course_id, "user": user_data},
+        )
+    except Exception as e:
+        print(e)
+        return JsonResponse({"message": "Course not found."}, status=404)
 
 
 @course_middleware_decorator
