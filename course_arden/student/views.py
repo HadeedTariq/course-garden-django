@@ -61,22 +61,26 @@ def feedback(request, course_id):
             return JsonResponse({"message": "Course not found."}, status=404)
         feedbacks = (
             Feedback.objects.filter(course=course)
-            .select_related("replies")
             .select_related("user")
+            .prefetch_related("replies")
         )
         feedback_serializer = FeedbackSerializer(
             feedbacks,
             many=True,
         )
-        print(feedback_serializer.data)
         return render(
             request,
             "student/feedback.html",
-            {"course": course, "course_id": course_id, "user": user_data},
+            {
+                "course": course,
+                "course_id": course_id,
+                "user": user_data,
+                "feedbacks": feedback_serializer.data,
+            },
         )
     except Exception as e:
         print(e)
-        return JsonResponse({"message": "Course not found."}, status=404)
+        return JsonResponse({"message": "Something went wrong"}, status=404)
 
 
 @course_middleware_decorator

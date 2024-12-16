@@ -99,6 +99,7 @@ class CouponCode(models.Model):
 
 
 class Feedback(models.Model):
+    id = models.AutoField(primary_key=True)
     content = models.TextField()
     user = models.ForeignKey(
         User,
@@ -116,6 +117,7 @@ class Feedback(models.Model):
 
 
 class Reply(models.Model):
+    id = models.AutoField(primary_key=True)
     content = models.TextField()
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="replies")
     feedback = models.ForeignKey(

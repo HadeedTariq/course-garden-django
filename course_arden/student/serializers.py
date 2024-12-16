@@ -94,7 +94,7 @@ class ReplySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Reply
-        fields = ["content", "user"]
+        fields = ["content", "user", "id"]
 
 
 class FeedbackSerializer(serializers.ModelSerializer):
@@ -103,7 +103,7 @@ class FeedbackSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Feedback
-        fields = ["content", "user", "replies"]
+        fields = ["content", "user", "replies", "id"]
 
     def get_replies(self, obj):
         replies = obj.replies.all()

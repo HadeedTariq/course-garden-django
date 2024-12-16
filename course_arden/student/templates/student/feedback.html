@@ -121,7 +121,29 @@
         <button type="submit">Submit Feedback</button>
       </form>
 
-      <div id="feedbackList"></div>
+      <div id="feedbackList">
+        {% for feedback in feedbacks %}
+        <div class="feedback-item">
+          <p class="feedback-text">{{feedback.content}}</p>
+          <button>Delete</button>
+          <div class="reply-section" id="reply-section-{{feedback.id}}">
+            <textarea
+              placeholder="Write your reply..."
+              id="reply-{{feedback.id}}"
+            ></textarea>
+            <button name="{{feedback.id}}" class="submit-reply">
+              Submit Reply
+            </button>
+            {% for reply in feedback.replies %}
+            <div class="feedback-item">
+              <p class="feedback-text">{{reply.content}}</p>
+              <button>Delete</button>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
     </div>
 
     <script>
@@ -172,6 +194,8 @@
           feedbackItem.classList.add("feedback-item");
           feedbackItem.innerHTML = `
               <p class="feedback-text">${data.message}</p>
+              <button>Delete</button>
+
               <div class="reply-section" id="reply-section-${data.feedback_id}">
                   <textarea placeholder="Write your reply..." id="reply-${data.feedback_id}"></textarea>
                   <button name="${data.feedback_id}" class="submit-reply">Submit Reply</button>
@@ -204,6 +228,8 @@
           feedbackItem.classList.add("feedback-item");
           feedbackItem.innerHTML = `
               <p class="feedback-text">${data.message}</p>
+              <button>Delete</button>
+
           `;
 
           document
@@ -216,6 +242,25 @@
       socket.onerror = function (error) {
         console.error("WebSocket error:", error);
       };
+      const submitReply = document.querySelectorAll(".submit-reply");
+      if (submitReply) {
+        submitReply.forEach((btn) => {
+          btn.addEventListener("click", (e) => {
+            const feedbackText = document.querySelector(
+              `#reply-${e.target.name}`
+            ).value;
+            socket.send(
+              JSON.stringify({
+                message: feedbackText,
+                message_type: "reply",
+                user_id: "{{ user.id }}",
+                feedback_id: Number(e.target.name),
+              })
+            );
+            feedbackText.value = "";
+          });
+        });
+      }
     </script>
   </body>
 </html>
