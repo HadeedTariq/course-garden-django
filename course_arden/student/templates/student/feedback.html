@@ -132,15 +132,14 @@
         .addEventListener("submit", function (e) {
           e.preventDefault();
 
-          // Get feedback text
           const feedbackText = document.getElementById("feedbackText").value;
 
           if (feedbackText) {
-            // Create feedback item
             socket.send(
               JSON.stringify({
                 message: feedbackText,
                 message_type: "feedback",
+                user_id: "{{ user.id }}",
               })
             );
           }
@@ -168,23 +167,41 @@
       };
 
       socket.onmessage = function (event) {
-        const feedbackItem = document.createElement("div");
-        feedbackItem.classList.add("feedback-item");
+        const data = JSON.parse(event.data);
+        if (data.message_type === "feedback") {
+          const feedbackItem = document.createElement("div");
+          feedbackItem.classList.add("feedback-item");
+          feedbackItem.innerHTML = `
+              <p class="feedback-text">${data.message}</p>
+              <button class="reply-btn">Reply</button>
+              <div class="reply-section">
+                  <textarea placeholder="Write your reply..." id="reply-${data.feedback_id}"></textarea>
+                  <button name="${data.feedback_id}" class="submit-reply">Submit Reply</button>
+              </div>
+          `;
 
-        feedbackItem.innerHTML = `
-            <p class="feedback-text">${event.data}</p>
-            <button class="reply-btn">Reply</button>
-            <div class="reply-section">
-                <textarea placeholder="Write your reply..."></textarea>
-                <button >Submit Reply</button>
-            </div>
-        `;
-
-        // Append to feedback list
-        document.getElementById("feedbackList").appendChild(feedbackItem);
-
-        // Clear feedback form
-        document.getElementById("feedbackText").value = "";
+          document.getElementById("feedbackList").appendChild(feedbackItem);
+          const submitReply = document.querySelectorAll(".submit-reply");
+          if (submitReply) {
+            submitReply.forEach((btn) => {
+              btn.addEventListener("click", (e) => {
+                const feedbackText = document.querySelector(
+                  `#reply-${e.target.name}`
+                ).value;
+                socket.send(
+                  JSON.stringify({
+                    message: feedbackText,
+                    message_type: "reply",
+                    user_id: "{{ user.id }}",
+                    feedback_id: Number(e.target.name),
+                  })
+                );
+              });
+            });
+          }
+          // Clear feedback form
+          document.getElementById("feedbackText").value = "";
+        }
       };
 
       socket.onerror = function (error) {

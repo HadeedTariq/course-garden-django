@@ -9,8 +9,6 @@ def course_middleware_decorator(view_func):
     @wraps(view_func)
     def _wrapped_view(request, *args, **kwargs):
         access_token = request.COOKIES.get("access_token")
-        pathname = request.path
-        print("path")
         if access_token:
             try:
                 user = utils.validate_access_token(access_token)
@@ -20,6 +18,6 @@ def course_middleware_decorator(view_func):
             except Exception as e:
                 return http.HttpResponse("Ivalid Token")
         else:
-            return redirect(f"/auth/login?next={pathname}")
+            return redirect(f"/auth/login")
 
     return _wrapped_view
