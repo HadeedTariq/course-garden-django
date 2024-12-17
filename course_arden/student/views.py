@@ -55,6 +55,7 @@ def watchCourse(request, course_id):
 @course_middleware_decorator
 def feedback(request, course_id):
     user_data = request.user_data
+
     try:
         course = Course.objects.filter(id=course_id).first()
         if not course:

@@ -125,7 +125,11 @@
         {% for feedback in feedbacks %}
         <div class="feedback-item">
           <p class="feedback-text">{{feedback.content}}</p>
-          <button>Delete</button>
+          {% if user.id == feedback.user.id %}
+          <button name="del-feedback-{{feedback.id}}" class="delete-feedback">
+            Delete
+          </button>
+          {% endif %}
           <div class="reply-section" id="reply-section-{{feedback.id}}">
             <textarea
               placeholder="Write your reply..."
@@ -137,7 +141,11 @@
             {% for reply in feedback.replies %}
             <div class="feedback-item">
               <p class="feedback-text">{{reply.content}}</p>
-              <button>Delete</button>
+              {% if user.id == reply.user.id %}
+              <button name="del-reply-{{reply.id}}" class="delete-reply">
+                Delete
+              </button>
+              {% endif %}
             </div>
             {% endfor %}
           </div>
@@ -166,16 +174,31 @@
           }
         });
 
-      // Toggle reply section visibility
-      document
-        .getElementById("feedbackList")
-        .addEventListener("click", function (e) {
-          if (e.target && e.target.classList.contains("reply-btn")) {
-            const replySection = e.target.nextElementSibling;
-            replySection.style.display =
-              replySection.style.display === "block" ? "none" : "block";
-          }
-        });
+      document.addEventListener("click", function (e) {
+        if (e.target.name.startsWith("del-feedback-")) {
+          const feedbackId = parseInt(e.target.name.split("-")[2]);
+          socket.send(
+            JSON.stringify({
+              message_type: "delete_feedback",
+              feedback_id: feedbackId,
+            })
+          );
+          window.location.reload();
+        }
+      });
+
+      document.addEventListener("click", function (e) {
+        if (e.target.name.startsWith("del-reply-")) {
+          const replyId = parseInt(e.target.name.split("-")[2]);
+          socket.send(
+            JSON.stringify({
+              message_type: "delete_reply",
+              reply_id: replyId,
+            })
+          );
+          window.location.reload();
+        }
+      });
     </script>
 
     <script>
@@ -194,11 +217,20 @@
           feedbackItem.classList.add("feedback-item");
           feedbackItem.innerHTML = `
               <p class="feedback-text">${data.message}</p>
-              <button>Delete</button>
+                 ${
+                   "{{ user.id }}" === data.user_id
+                     ? `<button class="delete-feedback" name="del-feedback-${data.feedback_id}">Delete</button>`
+                     : ""
+                 }
+
 
               <div class="reply-section" id="reply-section-${data.feedback_id}">
-                  <textarea placeholder="Write your reply..." id="reply-${data.feedback_id}"></textarea>
-                  <button name="${data.feedback_id}" class="submit-reply">Submit Reply</button>
+                  <textarea placeholder="Write your reply..." id="reply-${
+                    data.feedback_id
+                  }"></textarea>
+                  <button name="${
+                    data.feedback_id
+                  }" class="submit-reply">Submit Reply</button>
               </div>
           `;
 
@@ -228,7 +260,11 @@
           feedbackItem.classList.add("feedback-item");
           feedbackItem.innerHTML = `
               <p class="feedback-text">${data.message}</p>
-              <button>Delete</button>
+              ${
+                "{{ user.id }}" === data.user_id
+                  ? `<button class="delete-reply" name="del-reply-${data.reply_id}">Delete</button>`
+                  : ""
+              }
 
           `;
 
