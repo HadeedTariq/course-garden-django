@@ -33,4 +33,5 @@ urlpatterns = [
         views.getErolledCoursePoints,
         name="myPoints",
     ),
+    path("playlists/<int:course_id>", views.playlist_handler, name="playlist_handler"),
 ]

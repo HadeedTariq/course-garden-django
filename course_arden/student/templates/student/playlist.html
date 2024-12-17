@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Playlists</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f7f7f7;
+      }
+      .form-container {
+        max-width: 400px;
+        margin: auto;
+        padding: 20px;
+        background-color: #ffffff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .form-container input,
+      .form-container select,
+      .form-container button {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+      .message {
+        margin: 10px 0;
+        padding: 10px;
+        border-radius: 5px;
+      }
+      .success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+      .error {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+      .playlist {
+        margin: 20px 0;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="form-container">
+      <h1>Create Playlist</h1>
+      {% if success_message %}
+      <div class="message success">{{ success_message }}</div>
+      {% endif %} {% if error_message %}
+      <div class="message error">{{ error_message }}</div>
+      {% endif %}
+      <form method="POST">
+        {% csrf_token %}
+        <label for="title">Playlist Title</label>
+        <input
+          type="text"
+          id="title"
+          name="title"
+          placeholder="Enter playlist title"
+          required
+        />
+
+        <label for="type">Playlist Type</label>
+        <select id="type" name="type" required>
+          <option value="Private">Private</option>
+          <option value="Public">Public</option>
+        </select>
+
+        <button type="submit">Create Playlist</button>
+      </form>
+    </div>
+
+    <div class="playlists">
+      <h2>Your Playlists</h2>
+      {% for playlist in playlists %}
+      <div class="playlist">
+        <p><strong>Title:</strong> {{ playlist.title }}</p>
+        <p><strong>Type:</strong> {{ playlist.type }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </body>
+</html>

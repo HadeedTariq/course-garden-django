@@ -127,7 +127,11 @@
               Enroll Course
             </button>
           </form>
+
           {% endif %}
+          <a href="{% url 'student:playlist_handler' course.id %}">
+            Add to playlist
+          </a>
         </div>
       </div>
       {% endfor %}

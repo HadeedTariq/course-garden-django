@@ -129,6 +129,12 @@
           <button name="del-feedback-{{feedback.id}}" class="delete-feedback">
             Delete
           </button>
+          <button
+            name="update-feedback-{{feedback.id}}"
+            class="update-feedback"
+          >
+            Update
+          </button>
           {% endif %}
           <div class="reply-section" id="reply-section-{{feedback.id}}">
             <textarea
@@ -144,6 +150,9 @@
               {% if user.id == reply.user.id %}
               <button name="del-reply-{{reply.id}}" class="delete-reply">
                 Delete
+              </button>
+              <button name="update-reply-{{reply.id}}" class="update-reply">
+                Update
               </button>
               {% endif %}
             </div>

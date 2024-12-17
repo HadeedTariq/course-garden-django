@@ -1,6 +1,9 @@
+from django.db import IntegrityError
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.db.models import Sum
+
+from .models import PlayList
 from .utils import parse_price
 from .decorators import course_middleware_decorator
 from student.forms import CouponForm
@@ -228,3 +231,39 @@ def getErolledCoursePoints(request):
     except Exception as e:
         print(e)
         return JsonResponse({"message": "No purchases found"}, status=404)
+
+
+@course_middleware_decorator
+def playlist_handler(request, course_id):
+    user_id = request.user_data["id"]
+    playlists = PlayList.objects.filter(user_id=user_id).all()
+
+    # Initialize message variables
+    success_message = None
+    error_message = None
+
+    if request.method == "POST":
+        title = request.POST.get("title")
+        playlist_type = request.POST.get("type")
+
+        try:
+            playlist = PlayList.objects.create(
+                title=title, user_id=user_id, type=playlist_type
+            )
+            playlist.save()
+            success_message = "Playlist created successfully."
+
+        except IntegrityError:
+            error_message = "A playlist with this title already exists for this user."
+        except Exception as e:
+            error_message = f"An unexpected error occurred: {str(e)}"
+
+    return render(
+        request,
+        "student/playlist.html",
+        {
+            "playlists": playlists,
+            "success_message": success_message,
+            "error_message": error_message,
+        },
+    )
