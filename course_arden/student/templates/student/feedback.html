@@ -181,9 +181,9 @@
             JSON.stringify({
               message_type: "delete_feedback",
               feedback_id: feedbackId,
+              user_id: "{{ user.id }}",
             })
           );
-          window.location.reload();
         }
       });
 
@@ -194,9 +194,9 @@
             JSON.stringify({
               message_type: "delete_reply",
               reply_id: replyId,
+              user_id: "{{ user.id }}",
             })
           );
-          window.location.reload();
         }
       });
     </script>
@@ -272,6 +272,12 @@
             .getElementById(`reply-section-${data.feedback_id}`)
             .appendChild(feedbackItem);
           document.getElementById(`reply-${data.feedback_id}`).value = "";
+        } else if (data.message_type === "delete_feedback") {
+          alert("Feedback deleted successfully");
+          window.location.reload();
+        } else if (data.message_type === "delete_reply") {
+          alert("Feedback Reply deleted successfully");
+          window.location.reload();
         }
       };
 
