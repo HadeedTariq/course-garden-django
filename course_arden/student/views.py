@@ -3,13 +3,18 @@ from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.db.models import Sum
 
-from .models import PlayList
+from .models import PlayList, Playlist_Course
 from .utils import parse_price
 from .decorators import course_middleware_decorator
 from student.forms import CouponForm
 import stripe
 from django.conf import settings
-from .serializers import CourseSerializer, FeedbackSerializer, PurchaseCourseSerializer
+from .serializers import (
+    CourseSerializer,
+    FeedbackSerializer,
+    PlaylistSerializer,
+    PurchaseCourseSerializer,
+)
 from teacher.models import (
     CouponCode,
     Course,
@@ -51,7 +56,6 @@ def watchCourse(request, course_id):
         course = Course.objects.filter(id=course_id).first()
         return render(request, "student/watch-course.html", {"course": course})
     except Exception as e:
-        print(e)
         return JsonResponse({"message": "Course not found."}, status=404)
 
 
@@ -235,14 +239,25 @@ def getErolledCoursePoints(request):
 
 @course_middleware_decorator
 def playlist_handler(request, course_id):
+    course = Course.objects.filter(id=course_id).first()
+    if not course:
+        return JsonResponse({"message": "Course not found."}, status=404)
+
     user_id = request.user_data["id"]
+
     playlists = PlayList.objects.filter(user_id=user_id).all()
+    playlist_serializer = PlaylistSerializer(
+        playlists,
+        many=True,
+        context={"course_id": course_id},
+    )
 
     # Initialize message variables
     success_message = None
     error_message = None
+    method = request.POST.get("_method")
 
-    if request.method == "POST":
+    if method == "POST":
         title = request.POST.get("title")
         playlist_type = request.POST.get("type")
 
@@ -258,11 +273,24 @@ def playlist_handler(request, course_id):
         except Exception as e:
             error_message = f"An unexpected error occurred: {str(e)}"
 
+    if method == "PUT":
+
+        playlist_id = request.POST.get("playlist_id")
+        try:
+            playlist = PlayList.objects.get(id=playlist_id, user_id=user_id)
+            Playlist_Course.objects.create(playlist=playlist, course=course)
+            success_message = "Course added to playlist successfully."
+
+        except IntegrityError:
+            error_message = "Course already added to playlist"
+        except Exception as e:
+            error_message = f"An unexpected error occurred: {str(e)}"
+
     return render(
         request,
         "student/playlist.html",
         {
-            "playlists": playlists,
+            "playlists": playlist_serializer.data,
             "success_message": success_message,
             "error_message": error_message,
         },

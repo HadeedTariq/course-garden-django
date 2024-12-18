@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from authentication.models import User
+from .models import PlayList, Playlist_Course
 from teacher.models import (
     Chapter,
     Course,
@@ -108,3 +109,16 @@ class FeedbackSerializer(serializers.ModelSerializer):
     def get_replies(self, obj):
         replies = obj.replies.all()
         return ReplySerializer(replies, many=True).data
+
+
+class PlaylistSerializer(serializers.ModelSerializer):
+    course_exist = serializers.SerializerMethodField()
+
+    class Meta:
+        model = PlayList
+        fields = ["title", "user", "type", "id", "course_exist"]
+
+    def get_course_exist(self, obj):
+        return Playlist_Course.objects.filter(
+            course_id=self.context["course_id"], playlist_id=obj.id
+        ).exists()

@@ -75,7 +75,7 @@
           <option value="Private">Private</option>
           <option value="Public">Public</option>
         </select>
-
+        <input type="hidden" name="_method" value="POST" />
         <button type="submit">Create Playlist</button>
       </form>
     </div>
@@ -86,6 +86,18 @@
       <div class="playlist">
         <p><strong>Title:</strong> {{ playlist.title }}</p>
         <p><strong>Type:</strong> {{ playlist.type }}</p>
+        {% if playlist.course_exist %}
+        <p>Added</p>
+        {% else %}
+        <form method="POST">
+          {% csrf_token %}
+          <input type="hidden" name="_method" value="PUT" />
+
+          <button type="submit" name="playlist_id" value="{{playlist.id}}">
+            Add
+          </button>
+        </form>
+        {% endif %}
       </div>
       {% endfor %}
     </div>
