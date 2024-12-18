@@ -58,7 +58,36 @@
       <div class="message success">{{ success_message }}</div>
       {% endif %} {% if error_message %}
       <div class="message error">{{ error_message }}</div>
-      {% endif %}
+      {% endif %} {% if playlist_value != "" %}
+      <form method="POST">
+        {% csrf_token %}
+        <label for="title">Playlist Title</label>
+        <input
+          type="text"
+          id="title"
+          name="title"
+          value="{{playlist_value}}"
+          placeholder="Enter playlist title"
+          required
+        />
+        <input name="last_title" type="hidden" value="{{playlist_value}}" />
+
+        <label for="type">Playlist Type</label>
+        {% if playlist_type == 'Private' %}
+        <select id="type" name="type" required>
+          <option value="Private">Private</option>
+          <option value="Public">Public</option>
+        </select>
+        {% else %}
+        <select id="type" name="type" required>
+          <option value="Public">Public</option>
+          <option value="Private">Private</option>
+        </select>
+        {% endif %}
+        <input type="hidden" name="_method" value="UPDATEPLAYLISTPOST" />
+        <button type="submit">Update Playlist</button>
+      </form>
+      {% else %}
       <form method="POST">
         {% csrf_token %}
         <label for="title">Playlist Title</label>
@@ -78,6 +107,7 @@
         <input type="hidden" name="_method" value="POST" />
         <button type="submit">Create Playlist</button>
       </form>
+      {% endif %}
     </div>
 
     <div class="playlists">
@@ -98,6 +128,28 @@
           </button>
         </form>
         {% endif %}
+        <form method="POST">
+          {% csrf_token %}
+          <input type="hidden" name="_method" value="DELETE" />
+
+          <button type="submit" name="playlist_id" value="{{playlist.id}}">
+            Delete
+          </button>
+        </form>
+        <form method="POST">
+          {% csrf_token %}
+          <input type="hidden" name="_method" value="UPDATEPLAYLIST" />
+          <input
+            type="hidden"
+            name="playlist_value"
+            value="{{playlist.title}}"
+          />
+          <input type="hidden" name="playlist_type" value="{{playlist.type}}" />
+
+          <button type="submit" name="playlist_id" value="{{playlist.id}}">
+            Update
+          </button>
+        </form>
       </div>
       {% endfor %}
     </div>

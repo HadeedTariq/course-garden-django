@@ -273,6 +273,28 @@ def playlist_handler(request, course_id):
         except Exception as e:
             error_message = f"An unexpected error occurred: {str(e)}"
 
+    if method == "UPDATEPLAYLISTPOST":
+        last_title = request.POST.get("last_title")
+        print(last_title)
+        title = request.POST.get("title")
+
+        playlist_type = request.POST.get("type")
+
+        try:
+            playlist = PlayList.objects.get(title=last_title, user_id=user_id)
+            playlist.title = title
+            playlist.type = playlist_type
+            playlist.save()
+            success_message = "Playlist updated successfully."
+
+        except IntegrityError as error:
+            print(error)
+
+            error_message = "A playlist with this title already exists for this user."
+        except Exception as e:
+            print(e)
+            error_message = f"An unexpected error occurred: {str(e)}"
+
     if method == "PUT":
 
         playlist_id = request.POST.get("playlist_id")
@@ -286,6 +308,31 @@ def playlist_handler(request, course_id):
         except Exception as e:
             error_message = f"An unexpected error occurred: {str(e)}"
 
+    if method == "DELETE":
+
+        playlist_id = request.POST.get("playlist_id")
+        try:
+            PlayList.objects.filter(id=playlist_id, user_id=user_id).delete()
+            success_message = "Playlist deleted successfully"
+
+        except Exception as e:
+            error_message = f"An unexpected error occurred: {str(e)}"
+
+    if method == "UPDATEPLAYLIST":
+        playlist_value = request.POST.get("playlist_value")
+        playlist_type = request.POST.get("playlist_type")
+        return render(
+            request,
+            "student/playlist.html",
+            {
+                "playlists": playlist_serializer.data,
+                "success_message": success_message,
+                "error_message": error_message,
+                "playlist_value": playlist_value,
+                "playlist_type": playlist_type,
+            },
+        )
+
     return render(
         request,
         "student/playlist.html",
@@ -293,5 +340,6 @@ def playlist_handler(request, course_id):
             "playlists": playlist_serializer.data,
             "success_message": success_message,
             "error_message": error_message,
+            "playlist_value": "",
         },
     )
