@@ -2,7 +2,13 @@ from django.db import models
 from authentication.models import User
 from teacher.models import Course
 
+
 # Create your models here.
+class BaseModel(models.Model):
+    id = models.AutoField(primary_key=True)
+
+    class Meta:
+        abstract = True
 
 
 class PlayList_Type(models.TextChoices):
@@ -10,8 +16,8 @@ class PlayList_Type(models.TextChoices):
     Public = "Public", "Public"
 
 
-class PlayList(models.Model):
-    id = models.AutoField(primary_key=True)
+class PlayList(BaseModel):
+
     title = models.CharField(max_length=200)
     user = models.ForeignKey(User, related_name="playlists", on_delete=models.CASCADE)
     type = models.CharField(
@@ -26,8 +32,8 @@ class PlayList(models.Model):
         ]
 
 
-class Playlist_Course(models.Model):
-    id = models.AutoField(primary_key=True)
+class Playlist_Course(BaseModel):
+
     playlist = models.ForeignKey(
         PlayList, related_name="courses", on_delete=models.CASCADE
     )
