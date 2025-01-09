@@ -1,4 +1,8 @@
+from django.core.mail import EmailMessage
+
 import os
+
+from django.shortcuts import redirect
 from course_arden.utils import generate_random_string
 from django.conf import settings
 import secrets
@@ -80,3 +84,14 @@ def validate_refresh_token(token):
         raise ValueError("Token has expired.")
     except InvalidTokenError:
         raise ValueError("Invalid token.")
+
+
+def sendMail(subject, message, email):
+    email_message = EmailMessage(subject, message, settings.EMAIL_HOST_USER, [email])
+    try:
+        email_message.content_subtype = "html"
+        email_message.send()
+        return {"success": True}
+    except Exception as e:
+        print(f"Error sending email: {e}")
+        return {"success": False}

@@ -1,13 +1,13 @@
 from django.shortcuts import render, redirect
 from .forms import UserForm, OtpForm, LoginForm, GoogleRegisterForm
 from .models import User, Otp
-from django.core.mail import EmailMessage
 from django.conf import settings
 from django.http import HttpResponseRedirect, JsonResponse
 from django.core.serializers import serialize
 from django.contrib.auth import logout
 import cloudinary
 from .utils import (
+    sendMail,
     upload_file,
     generate_otp,
     generate_refresh_access_token,
@@ -74,17 +74,11 @@ def registerUser(request):
                 otp=otp,
             )
             message = f"Hello! <b>Thank you for joining us.</b> <br> Here your otp <strong>{otp}</strong>"
-            email_message = EmailMessage(
-                subject, message, settings.EMAIL_HOST_USER, [email]
-            )
-            try:
-                email_message.content_subtype = "html"
-                email_message.send()
+            result = sendMail(subject, message, email)
+            if result["success"] == True:
                 successmessage += "We send an otp to your mail"
-                return redirect("/auth/verify")
-            except Exception as e:
+            else:
                 errormessage += "Error Sending mail"
-                print(f"Error sending email: {e}")
     else:
         # Otp.objects.all().delete()
         # User.objects.all().delete()

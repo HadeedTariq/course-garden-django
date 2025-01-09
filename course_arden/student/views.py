@@ -171,6 +171,7 @@ def checkout(request, course_id):
     if request.method == "POST":
         try:
             course = Course.objects.get(id=course_id)
+            print(course)
             is_coupon_applied = course.coupons.filter(
                 coupon_users__id=user["id"]
             ).exists()
@@ -182,7 +183,7 @@ def checkout(request, course_id):
                 currency="usd",
                 metadata={"integration_check": "accept_a_payment"},
             )
-            print(intent["client_secret"])
+
             if intent is not None:
                 purchaser = CoursePurchasers.objects.create(
                     course_id=course,
