@@ -3,6 +3,8 @@ from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.db.models import Sum
 
+from .tasks import sendEmailOnCoursePurchase
+
 from .models import PlayList, Playlist_Course
 from .utils import parse_price
 from .decorators import course_middleware_decorator
@@ -27,6 +29,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 def getCourses(request):
+    CoursePurchasers.objects.all().delete()
     if request.user_data:
         courses = (
             Course.objects.filter(is_publish=True)
@@ -171,7 +174,6 @@ def checkout(request, course_id):
     if request.method == "POST":
         try:
             course = Course.objects.get(id=course_id)
-            print(course)
             is_coupon_applied = course.coupons.filter(
                 coupon_users__id=user["id"]
             ).exists()
@@ -197,6 +199,8 @@ def checkout(request, course_id):
 
                 enrollment.save()
                 purchaser.save()
+                sendEmailOnCoursePurchase.delay(user["id"])
+
                 return JsonResponse({"clientSecret": intent["client_secret"]})
         except Exception as e:
             print(e)
